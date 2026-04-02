@@ -4,6 +4,10 @@ import uuid
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return "Server działa!"
+
 @app.route('/get')
 def get_video():
     url = request.args.get('url')
@@ -13,4 +17,6 @@ def get_video():
 
     return send_file(filename, mimetype='video/mp4')
 
-app.run(host="0.0.0.0", port=3000)
+# 🔥 KLUCZOWE
+port = int(os.environ.get("PORT", 3000))
+app.run(host="0.0.0.0", port=port)
