@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: yt-server
+    runtime: python
+    buildCommand: ""
+    startCommand: python app.py
