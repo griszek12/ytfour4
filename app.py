@@ -1,8 +1,25 @@
 from flask import Flask, request, send_file
 import os
 import uuid
+from urllib.parse import urlparse, parse_qs
 
 app = Flask(__name__)
+
+# 🌐 FUNKCJA NAPRAWY LINKU
+def fix_youtube_url(url):
+    url = url.strip()
+    if "youtu.be/" in url:
+        # Skrócony link youtu.be/lvGMEdcTxYc?si=...
+        parsed = urlparse(url)
+        video_id = parsed.path.lstrip('/')  # lvGMEdcTxYc
+        return f"https://www.youtube.com/watch?v={video_id}"
+    elif "youtube.com/watch" in url:
+        # Pełny link, ale możemy oczyścić parametry
+        parsed = urlparse(url)
+        qs = parse_qs(parsed.query)
+        video_id = qs.get('v', [''])[0]
+        return f"https://www.youtube.com/watch?v={video_id}" if video_id else url
+    return url
 
 # 🌐 STRONA GŁÓWNA
 @app.route('/')
@@ -30,7 +47,7 @@ def home():
 
         <br><br>
 
-        <a href="/get?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+        <a href="/get?url=https://youtu.be/dQw4w9WgXcQ">
             <button>😈 Rickroll</button>
         </a>
 
@@ -48,6 +65,8 @@ def get_video():
     if not url:
         return "Brak URL", 400
 
+    url = fix_youtube_url(url)  # 🔧 Napraw link
+
     filename = f"{uuid.uuid4()}.mp4"
 
     cmd = f'yt-dlp --cookies cookies.txt --no-playlist --retries 3 -f "worst[ext=mp4][height<=240]/worst[ext=mp4]/worst" -o "{filename}" "{url}"'
@@ -56,7 +75,6 @@ def get_video():
     if not os.path.exists(filename):
         return "Błąd pobierania", 500
 
-    # 🔥 WAŻNE: download dla Safari
     return send_file(
         filename,
         mimetype='video/mp4',
