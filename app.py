@@ -18,7 +18,7 @@ def get_video():
     filename = f"{uuid.uuid4()}.mp4"
 
     # 🔥 yt-dlp z cookies + fallback + 240p
-    cmd = f'yt-dlp --cookies cookies.txt --extractor-args "youtube:player_client=android" -f "bestvideo[height<=240]+bestaudio/best[height<=240]/best" -o "{filename}" "{url}"'
+    cmd = f'yt-dlp --cookies cookies.txt --retries 3 --sleep-requests 2 -f "bestvideo[ext=mp4][height<=240]+bestaudio[ext=m4a]/best[ext=mp4][height<=240]/best" -o "{filename}" "{url}"'
 
     result = os.system(cmd)
 
