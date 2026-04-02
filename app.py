@@ -61,7 +61,7 @@ def get_video():
     filename = f"{uuid.uuid4()}.mp4"
 
     # ⚡ SZYBKI FORMAT 240p
-    cmd = f'yt-dlp --no-playlist --retries 3 -f "worst[ext=mp4][height<=240]/worst[ext=mp4]/worst" -o "{filename}" "{url}"'
+    cmd = f'yt-dlp --no-playlist --retries 3 -f "worst[height<=240]" --recode-video mp4 --postprocessor-args "-vcodec libx264 -profile:v baseline -level 3.0 -acodec aac -ar 44100" -o "{filename}" "{url}"'
     os.system(cmd)
 
     # ❗ sprawdzenie czy plik istnieje
